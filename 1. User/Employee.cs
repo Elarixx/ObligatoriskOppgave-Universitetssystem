@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
 {
-    internal class Employee
+    internal class Employee : Users 
     {
+        public uint EmployeeID { get; init; } = (uint)Random.Shared.Next(); 
+        public string Position { get; set; }
+        public string Department { get; set; }
+
     }
 }
