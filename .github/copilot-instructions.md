@@ -1,0 +1,12 @@
+# Copilot Instructions
+
+## Project Guidelines
+- User prefers code in the same existing project style and structure, with minimal unnecessary changes.
+- User prefers simpler, more understandable code over extra abstraction and does not want formatting helpers if they make the code harder to understand.
+- User prefers moving repeated/long console formatting lines into `STYLE.cs` helper methods to keep feature methods cleaner, provided it does not compromise code clarity.
+- User may prefer simpler, less crowded console output formatting instead of dense single-line book listings.
+- User wants simple, easy-to-understand comments: a title above each code section explaining what that section does/is for, while keeping existing case section format.
+- User prefers using switch statements for menu-choice branching instead of chained if statements, when practical.
+
+## Case Section Formatting
+- User requires case section headers to use the exact 3-line separator/comment format with CASE number, e.g., SEARCH BOOKS (CASE 5).
