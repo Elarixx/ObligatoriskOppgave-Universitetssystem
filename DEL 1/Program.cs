@@ -71,7 +71,7 @@ namespace Obligatorisk_Oppgave_1_Universitetssystem._3._Library
                 // Brukerens valg bestemmer hvilken metode som kalles.
                     switch (userChoice)
                     {
-                        case "1":
+                        case "1 ":
                             Course.CreateCourse(allCourses);
                             canRetryCurrentAction = true;
                             break;
