@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
-
 using Obligatorisk_Oppgave_1_Universitetssystem._1._User;
 using Obligatorisk_Oppgave_1_Universitetssystem._2._Course;
+using Obligatorisk_Oppgave_1_Universitetssystem._3._Library;
 //==============================================================
 
 
-namespace Obligatorisk_Oppgave_1_Universitetssystem._3._Library
+namespace Obligatorisk_Oppgave_1_Universitetssystem
 {
     internal class Program
     {
