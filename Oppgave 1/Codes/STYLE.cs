@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Obligatorisk_Oppgave_1_Universitetssystem
+namespace Obligatorisk_Oppgave_1_Universitetssystem.Codes
 {
     internal static class Styles
     {

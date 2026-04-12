@@ -1,5 +1,6 @@
 ﻿using System;
 using Obligatorisk_Oppgave_1_Universitetssystem._1._User;
+using Obligatorisk_Oppgave_1_Universitetssystem.Codes;
 
 namespace Obligatorisk_Oppgave_1_Universitetssystem._2._Course
 {
