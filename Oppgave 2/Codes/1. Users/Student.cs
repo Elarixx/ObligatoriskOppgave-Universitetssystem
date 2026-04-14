@@ -4,7 +4,11 @@ using System.Text;
 
 namespace Oppgave_2.Codes._1._Users
 {
-    internal class Student
+    internal class Student : User
     {
+        public Student()
+        {
+            Type = UserType.Student; // Setter brukerens type til Student når en ny Student opprettes.
+        }
     }
 }
