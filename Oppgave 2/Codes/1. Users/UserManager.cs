@@ -13,7 +13,7 @@ namespace Oppgave_2.Codes._1._Users
         private readonly List<User> users = new(); // listen kan kun endres innenfor UserManager.
 
         // Lesetilgang uten at andre klasser kan endre listen direkte.
-        public IReadOnlyList<User> Users => users;
+        public IReadOnlyList<Users> Users => users;
 
 
     // ================================================
