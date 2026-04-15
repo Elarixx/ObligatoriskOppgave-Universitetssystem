@@ -5,4 +5,5 @@
   </Folder>
   <Project Path="Oppgave 1/Oppgave 1.csproj" />
   <Project Path="Oppgave 2/Oppgave 2.csproj" />
+  <Project Path="Oppgave2-App.Tests/Oppgave2-App.Tests.csproj" Id="0bfb74b3-fa9e-44dc-beec-120d48dfb44b" />
 </Solution>

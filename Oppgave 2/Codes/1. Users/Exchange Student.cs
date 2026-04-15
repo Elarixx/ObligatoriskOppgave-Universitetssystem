@@ -30,7 +30,13 @@ namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
                     homeUniverity = "University of Australia",
                     Country = "Australia",
                     PeriodFrom = new DateOnly(2028, 8, 15),
-                    PeriodTo = new DateOnly(2028, 12, 20)
+                    PeriodTo = new DateOnly(2028, 12, 20),
+
+                    // <>-<>-<>-- Oppgave 2 --<>-<>-<>
+                        Username = "DrakeWashington",
+                        Password = "Washington_123",
+                        Role = UserRole.ExchangeStudent
+                    // <>-<>-<>-<>-<>-<>-<>-<>-<>-<>-<>
                 },
                 new Exchange_Student
                 {
@@ -39,7 +45,13 @@ namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
                     homeUniverity = "University of Japan",
                     Country = "Japan",
                     PeriodFrom = new DateOnly(2029, 1, 10),
-                    PeriodTo = new DateOnly(2029, 5, 30)
+                    PeriodTo = new DateOnly(2029, 5, 30),
+
+                    // <>-<>-<>-- Oppgave 2 --<>-<>-<>
+                        Username = "SaraiMonzon",
+                        Password = "Monzon_123",
+                        Role = UserRole.ExchangeStudent
+                    // <>-<>-<>-<>-<>-<>-<>-<>-<>-<>-<>
                 }
             };
         }

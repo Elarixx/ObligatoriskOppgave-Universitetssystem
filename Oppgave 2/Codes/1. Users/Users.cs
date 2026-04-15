@@ -1,6 +1,17 @@
 ﻿using Obligatorisk_Oppgave_1_Universitetssystem.Codes;
 using System;
 
+// Hva gjør dette? Liste med faste valg.
+// <>-<>-<>-- Oppgave 2 --<>-<>-<>
+    internal enum UserRole
+    {
+        Student,
+        ExchangeStudent,
+        Teacher,
+        Librarian
+    }
+// <>-<>-<>-<>-<>-<>-<>-<>-<>-<>-<>
+
 namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
 {
     internal abstract class Users
@@ -10,6 +21,12 @@ namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
     // ================================================
         public string Name { get; set; } = string.Empty; // Navn på brukeren.
         public string Email { get; set; } = string.Empty; // E-post til brukeren.
+
+        // <>-<>-<>-- Oppgave 2 --<>-<>-<>
+            public string Username { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
+            public UserRole Role { get; set; }
+        // <>-<>-<>-<>-<>-<>-<>-<>-<>-<>-<>
     }
 
     internal static class UserActions
@@ -17,61 +34,62 @@ namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
 // ================================================================================================
 //          ------------------------ CREATE USER ------------------------
 // ================================================================================================
-    // Viser meny for å opprette student, utvekslingsstudent eller ansatt.
-        public static void CreateUser( // Tar inn alle lister for å kunne legge til nye brukere.
-            List<Student> allStudents,
-            List<Exchange_Student> allExchangeStudents,
-            List<Employee> allEmployees)
-        {
-            Console.Clear();
-            Styles.WriteTitle("--- Create a new User ---");
-            Console.WriteLine("\n[1] Student");
-            Console.WriteLine("[2] Exchange Student");
-            Console.WriteLine("[3] Employee");
-            Console.Write("What type of user would you like to create?: ");
-            string? userChoice = Console.ReadLine(); // Leser inn brukerens valg for hvilken type bruker som skal opprettes.
+// Lager ny bruker og returnerer den, men legger den ikke inn i listene enda.
+public static Users? CreateUser()
+{
+    Console.Clear();
+    Styles.WriteTitle("--- Create a new User ---");
+    Console.WriteLine("\n[1] Student");
+    Console.WriteLine("[2] Exchange Student");
+    Console.WriteLine("[3] Employee");
+    Console.Write("What type of user would you like to create?: ");
+    string? userChoice = Console.ReadLine();
 
-            switch (userChoice)
-            {
-                case "1":
-                    CreateStudent(allStudents);
-                    break;
+    switch (userChoice)
+    {
+        case "1":
+            return CreateStudent();
 
-                case "2":
-                    CreateExchangeStudent(allStudents, allExchangeStudents);
-                    break;
+        case "2":
+            return CreateExchangeStudent();
 
-                case "3":
-                    CreateEmployee(allEmployees);
-                    break;
+        case "3":
+            return CreateEmployee();
 
-                default:
-                    Console.WriteLine("Invalid choice. Please select a valid user type.");
-                    break;
-            }
-        }
+        default:
+            Console.WriteLine("Invalid choice. Please select a valid user type.");
+            return null;
+    }
+}
+
 // ======================================================================
     //------------------------ CREATE STUDENT ------------------------\\
-        private static void CreateStudent(List<Student> allStudents) // Tar inn studentlisten for å kunne legge til nye studenter.
+        private static Student CreateStudent()
         {
-            Student newStudent = new Student(); // Lager nytt studentobjekt.
+            Student newStudent = new Student();
 
             Console.Write("Enter the student's name: ");
-            newStudent.Name = Console.ReadLine() ?? string.Empty; // Bruker tom streng hvis input er null.
-            Console.Write("Enter the student's email: ");
-            newStudent.Email = Console.ReadLine() ?? string.Empty; // Bruker tom streng hvis input er null.
+            newStudent.Name = Console.ReadLine() ?? string.Empty;
 
-            allStudents.Add(newStudent); // Legger studenten til i listen.
-            Console.WriteLine($"Student {newStudent.Name} (ID: {newStudent.StudentID}) has successfully been created.");
+            Console.Write("Enter the student's email: ");
+            newStudent.Email = Console.ReadLine() ?? string.Empty;
+
+            Console.Write("Choose username: ");
+            newStudent.Username = Console.ReadLine() ?? string.Empty;
+
+            Console.Write("Choose password: ");
+            newStudent.Password = Console.ReadLine() ?? string.Empty;
+
+            newStudent.Role = UserRole.Student;
+
+            return newStudent;
         }
 
 // ================================================================================
     // ------------------------ CREATE EXCHANGE STUDENT ------------------------\\
-        private static void CreateExchangeStudent( // Tar inn både student- og utvekslingsstudentlistene for å kunne legge til i begge.
-            List<Student> allStudents,
-            List<Exchange_Student> allExchangeStudents)
+        private static Exchange_Student? CreateExchangeStudent()
         {
-            Exchange_Student newExchangeStudent = new Exchange_Student(); // Lager nytt utvekslingsstudentobjekt.
+            Exchange_Student newExchangeStudent = new Exchange_Student();
 
             Console.Write("Enter the exchange student's name: ");
             newExchangeStudent.Name = Console.ReadLine() ?? string.Empty; 
@@ -90,7 +108,7 @@ namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
             if (!DateOnly.TryParse(Console.ReadLine(), out DateOnly periodFrom))
             {
                 Console.WriteLine("Invalid date format. Please enter the date in dd-mm-yyyy format.");
-                return;
+                return null;
             }
 
             // Validering av datoer for utvekslingsperioden.
@@ -98,29 +116,37 @@ namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
             if (!DateOnly.TryParse(Console.ReadLine(), out DateOnly periodTo))
             {
                 Console.WriteLine("Invalid date format. Please enter the date in dd-mm-yyyy format.");
-                return;
+                return null;
             }
 
-            if (periodTo < periodFrom) // Sjekker at sluttdato ikke er før startdato.
+            // Sjekker at 'to' datoen er etter 'from' datoen.
+            if (periodTo < periodFrom) 
             {
                 Console.WriteLine("Invalid date range. 'To' date must be after 'From' date.");
-                return;
+                return null;
             }
 
-            newExchangeStudent.PeriodFrom = periodFrom; // Setter startdato for utvekslingsperioden.
-            newExchangeStudent.PeriodTo = periodTo; // Setter sluttdato for utvekslingsperioden.
+            // Sette periodene for utvekslingsstudenten.
+            newExchangeStudent.PeriodFrom = periodFrom;
+            newExchangeStudent.PeriodTo = periodTo;
 
-            allExchangeStudents.Add(newExchangeStudent); // Legger til i egen liste for utvekslingsstudenter.
-            allStudents.Add(newExchangeStudent); // Legger også til i felles studentliste.
+            Console.Write("Choose username: ");
+            newExchangeStudent.Username = Console.ReadLine() ?? string.Empty;
+            
+            Console.Write("Choose password: ");
+            newExchangeStudent.Password = Console.ReadLine() ?? string.Empty;
 
-            Console.WriteLine($"Exchange Student {newExchangeStudent.Name} (ID: {newExchangeStudent.StudentID}) has successfully been created.");
+            // Sette rollen til ExchangeStudent.
+            newExchangeStudent.Role = UserRole.ExchangeStudent;
+
+            return newExchangeStudent;
         }
 
 // ========================================================================
     // ------------------------ CREATE EMPLOYEE ------------------------\\
-        private static void CreateEmployee(List<Employee> allEmployees) // Tar inn ansattlisten for å kunne legge til nye ansatte.
+        private static Employee CreateEmployee()
         {
-            Employee employee = new Employee(); // Lager nytt ansattobjekt.
+            Employee employee = new Employee();
 
             Console.Write("Enter the employee's name: ");
             employee.Name = Console.ReadLine() ?? string.Empty;
@@ -134,32 +160,24 @@ namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
             Console.Write("Enter the employee's department: ");
             employee.Department = Console.ReadLine() ?? string.Empty;
 
-            allEmployees.Add(employee); // Legger ansatte til i listen.
-            Console.WriteLine($"Employee {employee.Name} (ID: {employee.EmployeeID}) has successfully been created.");
-        }
+            // <>-<>-<>-- Oppgave 2 --<>-<>-<>
+                Console.Write("Choose username: ");
+                employee.Username = Console.ReadLine() ?? string.Empty;
+                Console.Write("Choose password: ");
+                employee.Password = Console.ReadLine() ?? string.Empty;
 
+                // Valg av rolle for ansatte.
+                if (employee.Position.Equals("Librarian", StringComparison.OrdinalIgnoreCase))
+                {
+                    employee.Role = UserRole.Librarian;
+                }
+                else
+                {
+                    employee.Role = UserRole.Teacher; // Antar at alle andre ansatte er lærere.
+                }
+            // <>-<>-<>-<>-<>-<>-<>-<>-<>-<>-<>
 
-
-
-// =========================================================================================================
-                            /* -------------- OPPGAVE 2 -------------- */
-// =========================================================================================================
-        internal enum UserType
-        {
-            Student = 1,
-            Teacher = 2,
-            Librarian = 3
-        }
-
-        internal abstract class User // Hvorfor abstract?
-        {
-            public uint UserID { get; set; } = (uint)Random.Shared.Next(1, 9999);
-            public string UserName { get; set; } = string.Empty;
-            public string Password { get; set; } = string.Empty;
-            public string Name { get; set; } = string.Empty;
-            public string Email { get; set; } = string.Empty;
-
-            public UserType Type { get; protected set; }
+            return employee;
         }
     }
 }

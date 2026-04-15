@@ -1,4 +1,6 @@
 ﻿using System;
+using Obligatorisk_Oppgave_1_Universitetssystem._2._Course;
+using Obligatorisk_Oppgave_1_Universitetssystem._3._Library;
 
 namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
 {
@@ -25,16 +27,115 @@ namespace Obligatorisk_Oppgave_1_Universitetssystem._1._User
                     Name = "Jaden Nora",
                     Email = "jadan.nor@employee.com",
                     Position = "Professor",
-                    Department = "Computer Science"
+                    Department = "Computer Science",
+
+                    // <>-<>-<>-- Oppgave 2 --<>-<>-<>
+                        Username = "JadenNora",
+                        Password = "Nora_123",
+                        Role = UserRole.Teacher
+                    // <>-<>-<>-<>-<>-<>-<>-<>-<>-<>-<>
                 },
                 new Employee
                 {
                     Name = "Marcus Lee",
                     Email = "marcus.lee@employee.com",
-                    Position = "Exchange Coordinator",
-                    Department = "International Relations"
+                    Position = "Librarian",
+                    Department = "Library",
+
+                    // <>-<>-<>-- Oppgave 2 --<>-<>-<>
+                        Username = "MarcusLee",
+                        Password = "Lee_123",
+                        Role = UserRole.Librarian
+                    //<>-<>-<>-<>-<>-<>-<>-<>-<>-<>-<>
                 }
             };
+        }
+// ==================================================================================
+//                  ----------- OPPGAVE 2: EMPLOYEE MENU CHOICE -----------                         
+// ==================================================================================
+    // Håndtere menyvalg for Teacher og Librarian.
+        public static bool HandleMenuChoice(
+            Users loggedInUser,
+            string userChoice,
+            List<Course> allCourses,
+            List<Student> allStudents,
+            List<Employee> allEmployees,
+            List<Books> allBooks,
+            List<Loan> allLoans,
+            ref bool running)
+        {
+            switch (loggedInUser.Role)
+            {
+                // Håndtere menyvalg for Teacher.
+                case UserRole.Teacher:
+                    switch (userChoice)
+                    {
+                        case "1":
+                            Course.CreateCourse(allCourses);
+                            return true;
+
+                        case "2":
+                            Course.SearchCourse(allCourses);
+                            return true;
+
+                        case "3":
+                            Books.SearchBooks(allBooks);
+                            return true;
+
+                        case "4":
+                            Books.BorrowBooks(allBooks, loggedInUser, allLoans);
+                            return true;
+
+                        case "5":
+                            Books.ReturnBooks(allLoans, loggedInUser);
+                            return true;
+
+                        case "6":
+                            Course.RegisterSyllabus(allCourses);
+                            return true;
+
+                        case "7":
+                            Course.SetStudentGrade(allCourses);
+                            return true;
+
+                        case "0":
+                            running = false;
+                            return false;
+
+                        default:
+                            Console.WriteLine("Invalid choice.");
+                            return false;
+                    }
+
+                // Håndtere menyvalg for Librarian.
+                case UserRole.Librarian:
+                    switch (userChoice)
+                    {
+                        case "1":
+                            Books.CreateBook(allBooks);
+                            return true;
+
+                        case "2":
+                            Books.ActiveLoans(allLoans);
+                            return false;
+
+                        case "3":
+                            Books.LoansHistory(allLoans);
+                            return false;
+
+                        case "0":
+                            running = false;
+                            return false;
+
+                        default:
+                            Console.WriteLine("Invalid choice.");
+                            return false;
+                    }
+
+                default:
+                    Console.WriteLine("Invalid role.");
+                    return false;
+            }
         }
     }
 }

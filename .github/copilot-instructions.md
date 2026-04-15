@@ -10,6 +10,7 @@
 - User prefers comments in Norwegian and code in English.
 - User wants step-by-step guidance to better understand what each part does.
 - User wants Oppgave 2 Program.cs to follow a similar runnable structure as Oppgave 1, including menu loop, optional retry current action, and press-any-key pause behavior.
+- User prefers that the retry prompt should not appear after informational overview screens like My Grades and My Courses; retry should only be shown for actions where repeating makes sense.
 
 ## Case Section Formatting
 - User requires case section headers to use the exact 3-line separator/comment format with CASE number, e.g., SEARCH BOOKS (CASE 5).
