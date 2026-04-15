@@ -1,36 +1,109 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Oppgave_2.Codes
+namespace Obligatorisk_Oppgave_1_Universitetssystem.Codes
 {
-    internal class STYLE
+    internal static class Styles
     {
 
-    // ================================================
-    //
-    // ================================================
-        // Spør bruker omm de vil prøve igjen på samme handling.
-        public static bool AskToRetryCurrentAction()
-        {
-            Console.Write("\nDo you want to try again? (y/n): ");
-            string retryChoice = Console.ReadLine() ?? string.Empty;
+        // ANSI-escape-koder gir enkel konsoll-formatering (f.eks. fet skrift)
 
-            // Returnerer true hvis brukeren skriver 'y' eller 'yes' (case-insensitive).
-            return retryChoice.Equals("y", StringComparison.OrdinalIgnoreCase) ||
-                   retryChoice.Equals("yes", StringComparison.OrdinalIgnoreCase);
+
+        // ======================================================================
+        // Tittel   ↓
+        // ======================================================================
+
+        // Skriver tittel i fet skrift og en underline-linje
+        public static void WriteTitle(string title)
+        {
+            const string boldOn = "\u001b[1m";   // ANSI: slå på fet skrift
+            const string boldOff = "\u001b[0m";  // ANSI: slå av/reset format
+            Console.WriteLine($"{boldOn}{title}{boldOff}");              // Skriv tittel i fet
+            Console.WriteLine(new string('=', Math.Max(title.Length, 30))); // Understrek, min 30 tegn
         }
 
-    // ================================================
-    //          GJØR ENDRINGER HER!!!!
-    // ================================================
-        // 
-        public static void PauseBeforeMenu(bool running)
+        // ======================================================================
+        // Overskrift   ↓
+        // ======================================================================
+
+        // Skriver overskrift i fet skrift og legger til en blank linje
+        public static void WriteHeading(string title)
         {
-            if (running)
+            const string boldOn = "\u001b[1m";   // ANSI: slå på fet skrift
+            const string boldOff = "\u001b[0m";  // ANSI: slå av/reset format
+            Console.WriteLine($"{boldOn}{title}{boldOff}"); // Overskrift i fet
+            Console.WriteLine();                            // Blank linje etter
+        }
+
+        // ======================================================================
+        // Separator / Pusterom      ↓
+        // ======================================================================
+
+        // Skriver en separatorlinje og en blank linje
+        public static void WriteSeparator()
+        {
+            Console.WriteLine("-------------------------------------------"); // Separator
+            Console.WriteLine();                                                 // Blank linje
+        }
+
+        // ======================================================================
+        // Vente på tastetrykk || 'WaitForNext'     ↓
+        // ======================================================================
+
+        // Viser prompt for neste øvelse og venter på tastetrykk
+        public static void WaitForNext(string nextLabel, bool addLeadingBlank = false)
+        {
+            if (addLeadingBlank) Console.WriteLine();             // Valgfri ekstra blank linje før
+            Console.WriteLine("~~~");                             // Liten markørlinje
+            Console.WriteLine($"\nTrykk en tast for å fortsette til {nextLabel}..."); // Prompt-tekst: venter på en tast blir trykket på.
+            Console.ReadKey(intercept: true);                     // Vent på tast uten å eko
+            Console.WriteLine();                                  // Blank linje etter tastetrykk
+        }
+
+        // ================================================================
+        //    ------------------- PAUSE BEFORE MENU ------------------------
+        // ================================================================
+        // Gir brukeren tid til å lese resultat før menyen vises på nytt.
+        public static void PauseBeforeMenu(string userChoice, bool running)
+        {
+            // Ikke pause hvis programmet avsluttes.
+            if (!running) return;
+
+            // Case 10 har allerede egen "Press any key..." i ShowDataOverview().
+            if (userChoice == "10")
             {
-                Console.WriteLine("\nPress any key to return to the menu...");
-                Console.ReadKey();
+                Console.Clear();
+                return;
+            }
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey(intercept: true);
+            Console.Clear();
+        }
+
+        // ================================================================
+        //    ------------------- RETRY CURRENT ACTION ---------------------
+        // ================================================================
+        // Lar bruker velge om samme menyvalg skal kjøres på nytt.
+        public static bool AskToRetryCurrentAction()
+        {
+            Console.Write("Try again? [R]etry / [M]enu: ");
+
+            while (true)
+            {
+                ConsoleKey key = Console.ReadKey(intercept: true).Key;
+
+                if (key == ConsoleKey.R)
+                {
+                    Console.WriteLine("R");
+                    return true;
+                }
+
+                if (key == ConsoleKey.M)
+                {
+                    Console.WriteLine("M");
+                    return false;
+                }
             }
         }
     }

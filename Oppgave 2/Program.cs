@@ -1,315 +1,246 @@
 ﻿using System;
-using Oppgave_2.Codes._1._Users;
-using Oppgave_2.Codes;
+using System.Linq;
 
-namespace Oppgave_2
+using Obligatorisk_Oppgave_1_Universitetssystem._1._User;
+using Obligatorisk_Oppgave_1_Universitetssystem._2._Course;
+using Obligatorisk_Oppgave_1_Universitetssystem.Codes;
+//==============================================================
+
+
+namespace Obligatorisk_Oppgave_1_Universitetssystem._3._Library
 {
     internal class Program
     {
-    // ================================================
-    //      ----------- PROGRAM DATA -----------
-    // ================================================
-        private static readonly UserManager userManager = new();
 
-        static void Main(string[] args)
+// ================================================================
+//     ------------------- PROGRAM LISTS ----------------------
+// ================================================================
+    // Felles lister som brukes i hele programmet for å lagre data i minnet.
+        static List<Course> allCourses = new List<Course>();
+        static List<Student> allStudents = new List<Student>();
+        static List<Exchange_Student> allExchangeStudents = new List<Exchange_Student>();
+        static List<Employee> allEmployees = new List<Employee>();
+        static List<Books> allBooks = new List<Books>();
+        static List<Loan> allLoans = new List<Loan>();
+// |═════════════════<>-<>-<>-<>-<>-<>-<>-<>-<>-<>-<>-<>═════════════════|
+
+
+        static void Main(string[] args) // Hovedmetoden der programmet starter. "string[] args" er en parameter som kan ta imot argumenter fra kommandolinjen når program kjøres.
         {
-            bool running = true;
+            AddDefaultUsers(); // Laster inn standarddata ved oppstart.
 
-            while (running)
+// ================================================================================================
+//          ------------------------ INTRODUCTION ------------------------
+// ================================================================================================
+
+            Console.Clear();
+            Styles.WriteTitle("Welcome to the University System");
+            Console.WriteLine("Manage courses, users, and library loans.");
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey(intercept: true);
+
+// ================================================================================================
+//          ------------------------ APPLICATION MENU ------------------------
+// ================================================================================================
+
+            Console.Clear();
+            bool running = true; // Styrer hovedløkken for menyen. Så lenge "running" er true, vil programmet kjøre.
+            while (running) 
             {
-                Console.Clear();
-                Console.WriteLine("=== Oppgave 2 - Login/Register System ===");
-                Console.WriteLine("[1] Log in");
-                Console.WriteLine("[2] Register new user");
-                Console.WriteLine("[0] Exit");
-                Console.Write("\nI choose: ");
+                Styles.WriteTitle("Choose an option:");
+                    Console.WriteLine("\n[1] Create a Course");
+                    Console.WriteLine("[2] Sign student up for and off a Course");
+                    Console.WriteLine("[3] Write out the course and the student");
+                    Console.WriteLine("[4] Search Course");
+                    Console.WriteLine("[5] Search Book");
+                    Console.WriteLine("[6] Borrow a Book");
+                    Console.WriteLine("[7] Return a Book / Show Loans");
+                    Console.WriteLine("[8] Register a Book");
+                    Console.WriteLine("[9] Register a User");
+                    Console.WriteLine("[10] Show data overview");
+                    Console.WriteLine("[0] Cancel/End\n");
+
+                Console.Write("What would you like to do?: ");
                 string userChoice = Console.ReadLine() ?? string.Empty;
 
-                bool retryCurrentAction;
-                do
+                bool retryCurrentAction; // Styrer om samme menyvalg skal kjøres på nytt eller om brukeren skal tilbake til menyen.
+                do // Lar brukeren velge å utføre samme handling på nytt eller gå tilbake til menyen.
                 {
                     retryCurrentAction = false;
                     bool canRetryCurrentAction = false;
 
+                // Brukerens valg bestemmer hvilken metode som kalles.
                     switch (userChoice)
                     {
                         case "1":
-                            Login();
+                            Course.CreateCourse(allCourses);
                             canRetryCurrentAction = true;
                             break;
-
                         case "2":
-                            Registry();
+                            Course.SignStudentUpOrOffCourse(allCourses, allStudents);
                             canRetryCurrentAction = true;
+                            break;
+                        case "3":
+                            Course.PrintCourseAndStudent(allCourses);
+                            canRetryCurrentAction = true;
+                            break;
+                        case "4":
+                            Course.SearchCourse(allCourses);
+                            canRetryCurrentAction = true;
+                            break;
+                        case "5":
+                            Books.SearchBooks(allBooks);
+                            canRetryCurrentAction = true;
+                            break;
+                        case "6":
+                            Books.BorrowBooks(allBooks, allStudents, allEmployees, allLoans);
+                            canRetryCurrentAction = true;
+                            break;
+                        case "7":
+                            Books.ReturnBooks(allLoans);
+                            canRetryCurrentAction = true;
+                            break;
+                        case "8":
+                            Books.CreateBook(allBooks);
+                            canRetryCurrentAction = true;
+                            break;
+                        case "9":
+                            UserActions.CreateUser(allStudents, allExchangeStudents, allEmployees);
+                            canRetryCurrentAction = true;
+                            break;
+                        case "10":
+                            ShowDataOverview();
                             break;
                         case "0":
-                            running = false; // Hva gjør denne?
-                            break; // hva menes med 'break'?
-
+                            running = false;
+                            break;
                         default:
-                            Console.WriteLine("Invalid Choice.");
+                            Console.WriteLine("Error");
                             break;
                     }
 
-                    // Hvis bruker kan prøve igjen, spør om det
                     if (running && canRetryCurrentAction)
                     {
-                        retryCurrentAction = STYLE.AskToRetryCurrentAction();
-                        // Tøm skjermen hvis brukeren vil prøve igjen
-                        if (retryCurrentAction) Console.Clear();
+                        retryCurrentAction = AskToRetryCurrentAction();
+
+                        if (retryCurrentAction)
+                        {
+                            Console.Clear();
+                        }
                     }
+                }
+                while (running && retryCurrentAction);
 
-                } while (running && retryCurrentAction); // Gjentar hvis bruker vil prøve igjen
+                // Legger til en separator for å skille mellom hver handling
+                if (running)
+                {
+                    Styles.WriteSeparator();
+                }
 
-                // Pause før menyen vises igjen
-                STYLE.PauseBeforeMenu(running);
+                Styles.PauseBeforeMenu(userChoice, running);
             }
         }
 
+// ================================================================
+//    ------------------- DEFAULT DATA ----------------------
+// ================================================================
+    // Laster inn forhåndsdefinerte kurs, studenter, ansatte og bøker.
+        private static void AddDefaultUsers() 
+        {
+            allCourses.AddRange(Course.DefaultCourses());
 
-    // ================================================
-    //     ------- LOGIN USER (CASE 1) -------
-    // ================================================
-        // Logger inn eksisterende bruker og sender videre til riktig meny basert på brukerens rolle.
-        private static void Login()
+            allStudents.AddRange(Student.DefaultStudents());
+
+            List<Exchange_Student> defaultExchangeStudents = Exchange_Student.DefaultExchangeStudents();
+            allExchangeStudents.AddRange(defaultExchangeStudents);
+            allStudents.AddRange(defaultExchangeStudents);
+
+            allEmployees.AddRange(Employee.DefaultEmployees());
+
+            allBooks.AddRange(Books.DefaultBooks());
+        }
+
+// ================================================================================================
+//          ------------------------ SHOW DATA OVERVIEW (CASE 10) ------------------------
+// ================================================================================================
+    // Viser en oversikt over alle studenter, utvekslingsstudenter, ansatte, kurs og bøker i systemet.
+        private static void ShowDataOverview()
         {
             Console.Clear();
-            Console.WriteLine("=== Login ===");
+            Styles.WriteTitle("--- Show Data Overview ---");
 
-            Console.Write("Enter username: ");
-            string userName = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("Enter password: ");
-            string password = Console.ReadLine() ?? string.Empty;
-
-            // Prøver å logge inn brukeren.
-            User? loggedInUser = userManager.Login(userName, password);
-
-            if (loggedInUser == null)
+            Console.WriteLine("\nStudents:");
+            foreach (Student student in allStudents) // Viser vanlige studenter. 
             {
-                Console.WriteLine("Login failed.");
-                return;
+                if (student is Exchange_Student) continue; // Hopper over utvekslingsstudenter (vises i egen seksjon).
+
+                // Lager tekst for studentens kurs (eller "none" hvis ingen kurs).
+                string enrolledCoursesText = student.EnrolledCourses.Count == 0
+                    ? "none"
+                    : string.Join(", ", student.EnrolledCourses.Select(course => $"{course.CourseName} ({course.CourseCode})"));
+
+                Console.WriteLine($"- {student.Name} (ID: {student.StudentID}) | Email: {student.Email} | Enrolled Courses: {enrolledCoursesText}");
             }
 
-            Console.WriteLine($"Login successfull!\nWelcome, {loggedInUser.Type}: {loggedInUser.Name}");
-            Console.ReadKey(); // Hvor leser denne koden inn fra?
-
-            switch (loggedInUser.Type)
+            Console.WriteLine("\nExchange Students:");
+            foreach (Exchange_Student exchangeStudent in allExchangeStudents) // Viser utvekslingsstudenter.
             {
-                case UserType.Student:
-                    StudentMenu();
-                    break;
-                case UserType.Teacher:
-                    TeacherMenu();
-                    break;
-                case UserType.Librarian:
-                    LibrarianMenu();
-                    break;
-                default:
-                    Console.WriteLine("Unknown user type."); // Annen melding?
-                    break;
+                // Lager tekst for kurs utvekslingsstudenten er påmeldt.
+                string enrolledCoursesText = exchangeStudent.EnrolledCourses.Count == 0
+                    ? "none"
+                    : string.Join(", ", exchangeStudent.EnrolledCourses.Select(course => $"{course.CourseName} ({course.CourseCode})"));
+
+                Console.WriteLine($"- {exchangeStudent.Name} (ID: {exchangeStudent.StudentID}) | Email: {exchangeStudent.Email}");
+                Console.WriteLine($"  Home University: {exchangeStudent.homeUniverity} | Country: {exchangeStudent.Country}");
+                Console.WriteLine($"  Period: {exchangeStudent.PeriodFrom:dd.MM.yyyy} - {exchangeStudent.PeriodTo:dd.MM.yyyy} | Enrolled Courses: {enrolledCoursesText}");
             }
+
+            Console.WriteLine("\nEmployees:");
+            foreach (Employee employee in allEmployees) // Viser ansatte.
+            {
+                Console.WriteLine($"- {employee.Name} (ID: {employee.EmployeeID}) | Email: {employee.Email} | Position: {employee.Position} | Department: {employee.Department}");
+            }
+
+            Console.WriteLine("\nCourses:");
+            foreach (Course course in allCourses) // Viser kurs.
+            {
+                Console.WriteLine($"- {course.CourseName} ({course.CourseCode}) | Credits: {course.CourseCredits} | Availability: {course.EnrolledStudents.Count}/{course.MaxSeats}");
+            }
+
+            Console.WriteLine("\nBooks:");
+            foreach (Books book in allBooks) // Viser bøker.
+            {
+                Console.WriteLine($"- ID: {book.BookID} | {book.Title}");
+                Console.WriteLine($"  Author: {book.Author} ({book.PublishedYear}) | Copies: {book.AvailableCopies}/{book.TotalCopies}");
+            }
+
+            Console.WriteLine("\nPress any key to return to the menu...");
+            Console.ReadKey(intercept: true); // Venter på tastetrykk uten å vise tasten i konsollen.
         }
 
-
-    // ================================================
-    //     ------- REGISTER USER (CASE 2) -------
-    // ================================================
-        // Registrerer ny bruker med valgt rolle.
-        private static void Registry()
+// ================================================================================================
+//          ------------------------ RETRY CURRENT ACTION ------------------------
+// ================================================================================================
+    // Lar bruker velge om samme menyvalg skal kjøres på nytt eller gå tilbake til meny.
+        private static bool AskToRetryCurrentAction()
         {
-            Console.Clear();
-            Console.WriteLine("=== Register New User ===");
+            Console.WriteLine(); // Litt pusterom før retry-valget.
+            Console.Write("Try again? [R]etry / [M]enu: ");
 
-            Console.WriteLine("Select user type:");
-            Console.WriteLine("[1] Student");
-            Console.WriteLine("[2] Teacher");
-            Console.WriteLine("[3] Librarian");
-            Console.Write("\nI choose: ");
-            string userTypeChoice = Console.ReadLine() ?? string.Empty;
-
-            // Hva gjør dette?
-            User? newUser = userTypeChoice switch
+            while (true)
             {
-                "1" => new Student(),
-                "2" => new Teacher(),
-                "3" => new Librarian(),
-                _ => null // Hva er dette til? Hvorfor '_'???
-            };
+                ConsoleKey key = Console.ReadKey(intercept: true).Key;
 
-            if (newUser == null)
-            {
-                Console.WriteLine("Invalid user type.");
-                return;
-            }
-
-            Console.Write("Enter username: ");
-            newUser.UserName = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("Enter password: ");
-            newUser.Password = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("Enter name: ");
-            newUser.Name = Console.ReadLine() ?? string.Empty;
-
-            Console.Write("Enter email: ");
-            newUser.Email = Console.ReadLine() ?? string.Empty;
-
-            bool success = userManager.RegisterUser(newUser, out string message);
-            Console.WriteLine(message);
-        }
-
-    // ================================================
-    //     ------- MENUS FOR EACH USER ROLE -------
-    // ================================================
-
-      /* ------ STUDENT MENU ------ */
-        private static void StudentMenu()
-        {
-            bool isLoggedIn = true;
-
-            while (isLoggedIn)
-            {
-                Console.Clear();
-                Console.WriteLine("=== Student Menu ===");
-                Console.WriteLine("[1] View my Courses\n" +
-                                  "[2] Enroll in Course\n" +
-                                  "[3] Withdraw from Course\n" +
-                                  "[4] View my Grades\n" +
-                                  "[5] Search Books\n" +
-                                  "[6] Borrow Books\n" +
-                                  "[7] Return Books\n" +
-                                  "[0] Logout");
-                Console.Write("\nI choose: ");
-                string studentUserChoice = Console.ReadLine() ?? string.Empty;
-
-                switch (studentUserChoice)
+                if (key == ConsoleKey.R)
                 {
-                    case "1":
-                        Console.WriteLine("");
-                        break;
-                    case "2":
-                        Console.WriteLine("");
-                        break;
-                    case "3":
-                        Console.WriteLine("");
-                        break;
-                    case "4":
-                        Console.WriteLine("");
-                        break;
-                    case "5":
-                        Console.WriteLine("");
-                        break;
-                    case "6":
-                        Console.WriteLine("");
-                        break;
-                    case "7":
-                        Console.WriteLine("");
-                        break;
-                    case "0":
-                        isLoggedIn = false; 
-                        break;
-                    default:
-                        Console.WriteLine("Invalid Choice.");
-                        break;
+                    Console.WriteLine("R");
+                    return true;
                 }
-            }
-        }
 
-      /* ------ TEACHER MENU ------ */
-        private static void TeacherMenu()
-        {
-            bool isLoggedIn = true;
-
-            while (isLoggedIn)
-            {
-                Console.Clear();
-                Console.WriteLine("=== Teacher Menu ===");
-                Console.WriteLine("[1] View Courses\n" +
-                                  "[2] Create Course\n" +
-                                  "[3] Search Course\n" +
-                                  "[4] Set Student Grade\n" +
-                                  "[5] Search Books\n" +
-                                  "[6] Borrow Books\n" +
-                                  "[7] Return Books\n" +
-                                  "[8] Register Curriculum\n" +
-                                  "[0] Logout");
-                Console.Write("\nI choose: ");
-                string teacherUserChoice = Console.ReadLine() ?? string.Empty;
-
-                switch (teacherUserChoice)
+                if (key == ConsoleKey.M)
                 {
-                    case "1":
-                        Console.WriteLine("");
-                        break;
-                    case "2":
-                        Console.WriteLine("");
-                        break;
-                    case "3":
-                        Console.WriteLine("");
-                        break;
-                    case "4":
-                        Console.WriteLine("");
-                        break;
-                    case "5":
-                        Console.WriteLine("");
-                        break;
-                    case "6":
-                        Console.WriteLine("");
-                        break;
-                    case "7":
-                        Console.WriteLine("");
-                        break;
-                    case "8":
-                        Console.WriteLine("");
-                        break;
-                    case "0":
-                        isLoggedIn = false;
-                        break;
-                    default:
-                        Console.WriteLine("Invalid Choice.");
-                        break;
-                }
-            }
-        }
-
-      /* ------ LIBRARIAN MENU ------ */
-        private static void LibrarianMenu()
-        {
-            bool isLoggedIn = true;
-
-            while (isLoggedIn)
-            {
-                Console.Clear();
-                Console.WriteLine("=== Librarian Menu ===");
-                Console.WriteLine("[1] Register Book\n" +
-                                  "[2] Search Books\n" +
-                                  "[3] View Active Loans\n" +
-                                  "[4] View Loan Loans\n" +
-                                  "[0] Logout");
-                Console.Write("\nI choose: ");
-                string librarianUserChoice = Console.ReadLine() ?? string.Empty;
-
-                switch (librarianUserChoice)
-                {
-                    case "1":
-                        Console.WriteLine("");
-                        break;
-                    case "2":
-                        Console.WriteLine("");
-                        break;
-                    case "3":
-                        Console.WriteLine("");
-                        break;
-                    case "4":
-                        Console.WriteLine("");
-                        break;
-                    case "0":
-                        isLoggedIn = false;
-                        break;
-                    default:
-                        Console.WriteLine("Invalid Choice.");
-                        break;
+                    Console.WriteLine("M");
+                    return false;
                 }
             }
         }
